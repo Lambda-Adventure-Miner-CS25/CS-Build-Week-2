@@ -42,6 +42,31 @@ if __name__ == '__main__':
                 print("next_room_id Response returned:")
                 print(r)
 
+    def pick_up_function(treasure):
+        data = {"name": treasure}
+        r = requests.post(url=node + "/adv/take", json=data, headers=headers)
+        # Handle non-json response
+        try:
+            result = r.json()
+            time.sleep(r.json()["cooldown"])
+            return result
+        except ValueError:
+            print("Error:  Non-json response")
+            print("Response returned:")
+            print(r)
+
+    def get_player_status_function():
+        r = requests.post(url=node + "/adv/status", headers=headers)
+        # Handle non-json response
+        try:
+            result = r.json()
+            time.sleep(r.json()["cooldown"])
+            return result
+        except ValueError:
+            print("Error:  Non-json response")
+            print("Response returned:")
+            print(r)
+
     r = requests.get(url=node + "/adv/init", headers=headers)
     # Handle non-json response
     try:
@@ -53,6 +78,10 @@ if __name__ == '__main__':
     cooldown = starting_room["cooldown"]
     print("cooldown ", cooldown)
     time.sleep(cooldown)
+
+    # get player status
+    player = get_player_status_function()
+    print("player status", player)
 
     # Create an empty stack
     stack = []
@@ -74,6 +103,17 @@ if __name__ == '__main__':
 
             for d in room["exits"]:
                 visited[room["room_id"]][d] = "?"
+
+        # if there is items in the room, take up item
+        if len(room["items"]) > 0:
+
+            for t in room["items"]:
+                pick_up_function(t)
+                print(f"picked up {t}")
+                player["encumbrance"] += 1
+            if player["encumbrance"] >= player["strength"]:
+                print("Stop! your inventory is full, go to the store")
+                break
 
         # check if its neighbors have been visited
         # if not, go to one of the directions
@@ -138,6 +178,10 @@ if __name__ == '__main__':
             else:
                 visited[room_s_to["room_id"]]["n"] = room["room_id"]
 
+        elif len(visited) == 500:
+            print(visited)
+            break
+
         else:
             # if all neighbors have been visited, use bfs to find the first room that has explored neighbor
             # dfs
@@ -186,5 +230,3 @@ if __name__ == '__main__':
                         new_path.append("e")
                         paths.append(new_path)
                         queue.append(visited[room_id]["e"])
-
-    print(visited)
