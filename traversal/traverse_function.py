@@ -110,14 +110,14 @@ if __name__ == '__main__':
 
         # Check if it's been visited
         # If it has not been visited...
-        if room["room_id"] not in visited:
+        if str(room["room_id"]) not in visited:
             # Mark it as visited
             print("stack", room["room_id"])
             print("room visited", len(visited))
-            visited[room["room_id"]] = dict()
+            visited[str(room["room_id"])] = dict()
 
             for d in room["exits"]:
-                visited[room["room_id"]][d] = "?"
+                visited[str(room["room_id"])][d] = "?"
 
         # if there is items in the room, take up item
         # if len(room["items"]) > 0:
@@ -138,11 +138,11 @@ if __name__ == '__main__':
         #     print('Shop time')
         #     break
 
-        if "w" in visited[room["room_id"]] and visited[room["room_id"]]["w"] == "?":
+        if "w" in visited[str(room["room_id"])] and visited[str(room["room_id"])]["w"] == "?":
             room_w_to = moving_function("w")
 
             stack.append(room_w_to)
-            visited[room["room_id"]]["w"] = room_w_to["room_id"]
+            visited[str(room["room_id"])]["w"] = room_w_to["room_id"]
             if room_w_to["room_id"] not in visited:
                 # Mark it as visited
                 print("room visited", len(visited))
@@ -154,11 +154,11 @@ if __name__ == '__main__':
             else:
                 visited[room_w_to["room_id"]]["e"] = room["room_id"]
 
-        elif "e" in visited[room["room_id"]] and visited[room["room_id"]]["e"] == "?":
+        elif "e" in visited[str(room["room_id"])] and visited[str(room["room_id"])]["e"] == "?":
             room_e_to = moving_function("e")
 
             stack.append(room_e_to)
-            visited[room["room_id"]]["e"] = room_e_to["room_id"]
+            visited[str(room["room_id"])]["e"] = room_e_to["room_id"]
             if room_e_to["room_id"] not in visited:
                 # Mark it as visited
                 print("room visited", len(visited))
@@ -169,11 +169,11 @@ if __name__ == '__main__':
             else:
                 visited[room_e_to["room_id"]]["w"] = room["room_id"]
 
-        elif "n" in visited[room["room_id"]] and visited[room["room_id"]]["n"] == "?":
+        elif "n" in visited[str(room["room_id"])] and visited[str(room["room_id"])]["n"] == "?":
             room_n_to = moving_function("n")
 
             stack.append(room_n_to)
-            visited[room["room_id"]]["n"] = room_n_to["room_id"]
+            visited[str(room["room_id"])]["n"] = room_n_to["room_id"]
             if room_n_to["room_id"] not in visited:
                 # Mark it as visited
                 print("room visited", len(visited))
@@ -184,11 +184,11 @@ if __name__ == '__main__':
             else:
                 visited[room_n_to["room_id"]]["s"] = room["room_id"]
 
-        elif "s" in visited[room["room_id"]] and visited[room["room_id"]]["s"] == "?":
+        elif "s" in visited[str(room["room_id"])] and visited[str(room["room_id"])]["s"] == "?":
             room_s_to = moving_function("s")
 
             stack.append(room_s_to)
-            visited[room["room_id"]]["s"] = room_s_to["room_id"]
+            visited[str(room["room_id"])]["s"] = room_s_to["room_id"]
             if room_s_to["room_id"] not in visited:
                 # Mark it as visited
                 print("room visited", len(visited))
@@ -207,7 +207,7 @@ if __name__ == '__main__':
             paths = []
             for d in room["exits"]:
                     paths.append([d])
-                    queue.append(visited[room["room_id"]][d])
+                    queue.append(visited[str(room["room_id"])][d])
             # While the stack is not empty...
             while len(queue) > 0:
                 # pop, the first room
@@ -215,36 +215,36 @@ if __name__ == '__main__':
                 path = paths.pop(0)
 
                 # check this visited_room to see if it has unexplored neighbor
-                if ("s" in visited[room_id] and visited[room_id]["s"] == "?") or ("n" in visited[room_id] and visited[room_id]["n"] == "?") or ("w" in visited[room_id] and visited[room_id]["w"] == "?") or ("e" in visited[room_id] and visited[room_id]["e"] == "?"):
+                if ("s" in visited[str(room["room_id"])]) or ("n" in visited[str(room["room_id"])]) or ("w" in visited[str(room["room_id"])]) or ("e" in visited[str(room["room_id"])]):
                     print("queue", room_id)
                     queue.clear()
                     current_room = room
                     for p in path:
                         new_room = moving_function(
-                            p, visited[current_room["room_id"]][p])
+                            p, visited[str(current_room["room_id"])][p])
                         current_room = new_room
 
                     stack.append(current_room)
                 else:
                     # add neighbor to the queue
-                    if "s" in visited[room_id]:
+                    if "s" in visited[str(room["room_id"])]:
                         new_path = path.copy()
                         new_path.append("s")
                         paths.append(new_path)
-                        queue.append(visited[room_id]["s"])
-                    if "n" in visited[room_id]:
+                        queue.append(visited[str(room["room_id"])]["s"])
+                    if "n" in visited[str(room["room_id"])]:
                         new_path = path.copy()
                         new_path.append("n")
                         paths.append(new_path)
-                        queue.append(visited[room_id]["n"])
-                    if "w" in visited[room_id]:
+                        queue.append(visited[str(room["room_id"])]["n"])
+                    if "w" in visited[str(room["room_id"])]:
                         new_path = path.copy()
                         new_path.append("w")
                         paths.append(new_path)
-                        queue.append(visited[room_id]["w"])
-                    if "e" in visited[room_id]:
+                        queue.append(visited[str(room["room_id"])]["w"])
+                    if "e" in visited[str(room["room_id"])]:
                         new_path = path.copy()
                         new_path.append("e")
                         paths.append(new_path)
-                        queue.append(visited[room_id]["e"])
+                        queue.append(visited[str(room["room_id"])]["e"])
 
