@@ -3,13 +3,13 @@ import requests
 import time
 import sys
 import json
-from api_key import Ty_KEY
+from api_key import Min_KEY
 from visited import visited
 
 if __name__ == '__main__':
     # The server address
     node = "https://lambda-treasure-hunt.herokuapp.com/api"
-    headers = {"Authorization": Ty_KEY}
+    headers = {"Authorization": Min_KEY}
 
     def moving_function(direction, room_id=None):
         if room_id is None:

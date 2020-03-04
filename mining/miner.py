@@ -4,7 +4,7 @@ import time
 import sys
 import random
 
-from api_key import Ty_KEY
+from api_key import Min_KEY
 from uuid import uuid4
 from timeit import default_timer as timer
 
@@ -24,18 +24,15 @@ def proof_of_work(last_proof, diff):
 
     print("Searching for next proof")
     proof = 0
-    #  TODO: Your code here
-    last = f'{last_proof}'.encode()
-    last_hash = hashlib.sha256(last).hexdigest()
     
-    while valid_proof(last_hash, last_proof, proof, diff) is False:
+    while valid_proof(last_proof, proof, diff) is False:
         proof += 1
 
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
 
 
-def valid_proof(last_hash, last_proof, proof, diff):
+def valid_proof(last_proof, proof, diff):
     """
     Validates the Proof:  Multi-ouroborus:  Do the last six characters of
     the hash of the last proof match the first six characters of the hash
@@ -59,19 +56,10 @@ if __name__ == '__main__':
         node = sys.argv[1]
     else:
         node = "https://lambda-treasure-hunt.herokuapp.com/api/bc"
-        headers = {"Authorization": Ty_KEY}
+        headers = {"Authorization": Min_KEY}
 
     coins_mined = 0
 
-    # Load or create ID
-    # f = open("my_id.txt", "r")
-    # id = f.read()
-    # print("ID is", id)
-    # f.close()
-
-    # if id == 'NONAME\n':
-    #     print("ERROR: You must change your name in `my_id.txt`!")
-    #     exit()
     # Run forever until interrupted
     while True:
         # Get the last proof from the server
@@ -81,7 +69,6 @@ if __name__ == '__main__':
         print(f'New Proof {new_proof}')
 
         post_data = {"proof": new_proof}
-        print(post_data)
 
         r = requests.post(url=node + "/mine", json=post_data, headers=headers)
         data = r.json()

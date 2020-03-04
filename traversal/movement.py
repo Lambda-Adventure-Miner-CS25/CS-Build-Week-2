@@ -3,7 +3,7 @@ import requests
 import time
 import sys
 import json
-from api_key import Ty_KEY
+from api_key import Min_KEY
 from visited import visited
 
 
@@ -22,7 +22,7 @@ shrine2 = 374
 # Add power abilites (STRETCH)
 
 node = "https://lambda-treasure-hunt.herokuapp.com/api"
-headers = {"Authorization": Ty_KEY}
+headers = {"Authorization": Min_KEY}
 
 # def wise_map(visited):
 #     # Get the current room information
@@ -69,16 +69,15 @@ def sell(player):
 
 
 def moving_function(traversal_path, rooms_id_list=None):
-    print(traversal_path, rooms_id_list)
     for i in range(len(traversal_path)):
-        # data = {"direction": i, "next_room_id": str(room_id)}
+        
         data = {"direction": traversal_path[i], "next_room_id": str(rooms_id_list[i])}
         r = requests.post(url=node + "/adv/move",
                             json=data, headers=headers)
         # Handle non-json response
-        print("data", data)
         try:
-            print("cooldown", r.json()["cooldown"])
+            print(data)
+            print("cooldown:", r.json()["cooldown"])
             time.sleep(r.json()["cooldown"])
         except ValueError:
             print("Error:  Non-json response")
@@ -87,13 +86,12 @@ def moving_function(traversal_path, rooms_id_list=None):
 
 r = requests.get(url=node + "/adv/init", headers=headers)
 time.sleep(r.json()["cooldown"])
-starting_room = r.json()
+starting_room = r.json()['room_id']
 
-def room_search(visited, starting_room, target):
+def room_search(visited, start, target):
     queue = []
     visited_rooms = set()
-    start = starting_room['room_id']
-    print("start", start)
+    # print("start", start)
     queue.append(start)
     rooms_id_list=[[]]
     paths = [[]]
@@ -101,11 +99,10 @@ def room_search(visited, starting_room, target):
         path = paths.pop(0)
         rooms_id = rooms_id_list.pop(0)
         last_room = queue.pop(0)
-        print(f'Path {path}')  
 
         if last_room == target:
-            print(path)
-            print("last_room", last_room)
+            print("path", path)
+            # print("last_room", last_room)
             return moving_function(path, rooms_id)
 
         else:
@@ -118,12 +115,14 @@ def room_search(visited, starting_room, target):
                         new_rooms_id = rooms_id.copy()
                         new_rooms_id.append(visited[str(last_room)][d])
                         rooms_id_list.append(new_rooms_id)
-                        print(f'new Path {new_path}')
+
                         paths.append(new_path)
                         queue.append(visited[str(last_room)][d])
             else:
                 pass
 
 
-room_search(visited, starting_room, name_change)
-# sell(player)
+if __name__ == '__main__':
+
+    room_search(visited, starting_room, name_change)
+    # sell(player)
