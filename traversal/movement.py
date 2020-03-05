@@ -5,19 +5,22 @@ import sys
 import json
 from api_key import Min_KEY
 from visited import visited
+from under_world_visited import under_world_visited
 
 
 # Import visited for wise movement 
 # Traversal that uses DFS, to find path 
-    # Store at room id 1
+# Store at room id 1
 store = 1
-    # Name Changer at 467
+# Name Changer at 467
 name_change = 467
-    # Well at 55 
+# Well at 55 
 well = 55
-    # Shrines at 461, 374
+# Shrines at 461, 374
 shrine1 = 461
 shrine2 = 374
+# The Transmogriphier
+transmogriphier = 495
     # Mine location (decoded coordinates as room id)
 # Add power abilites (STRETCH)
 
@@ -35,6 +38,8 @@ headers = {"Authorization": Min_KEY}
 
 player_data = requests.post(url=node + "/adv/status", headers=headers)
 player = player_data.json()
+
+visited_map = under_world_visited
 
 def sell(player):
     if len(player['inventory']) > 0:
@@ -121,7 +126,8 @@ r = requests.get(url=node + "/adv/init", headers=headers)
 time.sleep(r.json()["cooldown"])
 starting_room = r.json()['room_id']
 
-def room_search(visited, start, target):
+
+def room_search(visited_map, start, target):
     queue = []
     visited_rooms = set()
     # print("start", start)
@@ -141,21 +147,21 @@ def room_search(visited, start, target):
         else:
             if last_room not in visited_rooms:
                 visited_rooms.add(last_room)
-                for d in visited[str(last_room)]:
-                    if visited[str(last_room)][d] not in visited_rooms:
+                for d in visited_map[last_room]:
+                    if visited_map[last_room][d] not in visited_rooms:
                         new_path = path.copy()
                         new_path.append(d)
                         new_rooms_id = rooms_id.copy()
-                        new_rooms_id.append(visited[str(last_room)][d])
+                        new_rooms_id.append(visited_map[last_room][d])
                         rooms_id_list.append(new_rooms_id)
 
                         paths.append(new_path)
-                        queue.append(visited[str(last_room)][d])
+                        queue.append(visited_map[last_room][d])
             else:
                 pass
 
 
 if __name__ == '__main__':
 
-    room_search(visited, starting_room, 1)
+    room_search(visited_map, starting_room, 986)
     # sell(player)

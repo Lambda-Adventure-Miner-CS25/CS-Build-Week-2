@@ -10,6 +10,8 @@ if __name__ == '__main__':
     node = "https://lambda-treasure-hunt.herokuapp.com/api"
     headers = {"Authorization": "Token 926411256868a26f67393e2aad26dbaef6fc0bb6"}
 
+    
+
     def moving_function(direction, room_id=None):
         if room_id is None:
             data = {"direction": direction}
@@ -83,6 +85,7 @@ if __name__ == '__main__':
     player = get_player_status_function()
     print("player status", player)
 
+    
     # Create an empty stack
     stack = []
     # Add the starting room to the stack
@@ -90,6 +93,8 @@ if __name__ == '__main__':
     print("start", stack)
     # Create an empty dict to store visited nodes
     visited = dict()
+    under_world = dict()
+
     while len(stack) > 0:
         # pop, the first room
         room = stack.pop()
@@ -100,21 +105,32 @@ if __name__ == '__main__':
             print("stack", room["room_id"])
             print("room visited", len(visited))
             visited[room["room_id"]] = dict()
+            under_world[room["room_id"]] = room
 
             for d in room["exits"]:
                 visited[room["room_id"]][d] = "?"
 
         # if there is items in the room, take up item
+        # if len(room["items"]) > 0:
+
+        #     for t in room["items"]:
+        #         pick_up_function(t)
+        #         print(f"picked up {t}")
+        #         player["encumbrance"] += 1
+        #     if player["encumbrance"] >= player["strength"]:
+        #         print("Stop! your inventory is full, go to the store")
+        #         break
+
+
+        # if there is items in the room, take up item
         if len(room["items"]) > 0:
 
             for t in room["items"]:
-                pick_up_function(t)
-                print(f"picked up {t}")
-                player["encumbrance"] += 1
-            if player["encumbrance"] >= player["strength"]:
-                print("Stop! your inventory is full, go to the store")
-                break
-
+                print("items", t)
+                if player["encumbrance"] < player["strength"] and "snitch" in t:
+                    pick_up_function(t)
+                    print(f"picked up {t}")
+                    player["encumbrance"] += 1
         # check if its neighbors have been visited
         # if not, go to one of the directions
         if "w" in visited[room["room_id"]] and visited[room["room_id"]]["w"] == "?":
@@ -127,6 +143,8 @@ if __name__ == '__main__':
                 print("room visited", len(visited))
 
                 visited[room_w_to["room_id"]] = dict()
+                under_world[room_w_to["room_id"]] = room_w_to
+
                 for d in room_w_to["exits"]:
                     visited[room_w_to["room_id"]][d] = "?"
                 visited[room_w_to["room_id"]]["e"] = room["room_id"]
@@ -142,6 +160,8 @@ if __name__ == '__main__':
                 # Mark it as visited
                 print("room visited", len(visited))
                 visited[room_e_to["room_id"]] = dict()
+                under_world[room_e_to["room_id"]] = room_e_to
+
                 for d in room_e_to["exits"]:
                     visited[room_e_to["room_id"]][d] = "?"
                 visited[room_e_to["room_id"]]["w"] = room["room_id"]
@@ -157,6 +177,8 @@ if __name__ == '__main__':
                 # Mark it as visited
                 print("room visited", len(visited))
                 visited[room_n_to["room_id"]] = dict()
+                under_world[room_n_to["room_id"]] = room_n_to
+
                 for d in room_n_to["exits"]:
                     visited[room_n_to["room_id"]][d] = "?"
                 visited[room_n_to["room_id"]]["s"] = room["room_id"]
@@ -172,6 +194,8 @@ if __name__ == '__main__':
                 # Mark it as visited
                 print("room visited", len(visited))
                 visited[room_s_to["room_id"]] = dict()
+                under_world[room_s_to["room_id"]] = room_s_to
+
                 for d in room_s_to["exits"]:
                     visited[room_s_to["room_id"]][d] = "?"
                 visited[room_s_to["room_id"]]["n"] = room["room_id"]
@@ -180,6 +204,7 @@ if __name__ == '__main__':
 
         elif len(visited) == 500:
             print(visited)
+            print(under_world)
             break
 
         else:

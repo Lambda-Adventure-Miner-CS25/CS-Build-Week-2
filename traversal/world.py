@@ -1,4 +1,4 @@
-{
+world = {
     "357": {
         "room_id": 357,
         "title": "A misty room",
