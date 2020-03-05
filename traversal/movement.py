@@ -3,7 +3,7 @@ import requests
 import time
 import sys
 import json
-from api_key import Ty_KEY
+from api_key import Andrew_KEY
 from visited import visited
 
 
@@ -22,7 +22,7 @@ shrine2 = 374
 # Add power abilites (STRETCH)
 
 node = "https://lambda-treasure-hunt.herokuapp.com/api"
-headers = {"Authorization": Ty_KEY}
+headers = {"Authorization": Andrew_KEY}
 
 # def wise_map(visited):
 #     # Get the current room information

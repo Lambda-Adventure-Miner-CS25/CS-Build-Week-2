@@ -1,16 +1,17 @@
 import hashlib
 import requests
-import time
-import sys
-import random
 
+import sys
+import json
 from api_key import Andrew_KEY
 from uuid import uuid4
+import time
 from timeit import default_timer as timer
 
+import random
 
 
-def proof_of_work(last_proof, diff):
+def proof_of_work(last_proof, difficulty):
     """
     Multi-Ouroboros of Work Algorithm
     - Find a number p' such that the last six digits of hash(p) are equal
@@ -24,30 +25,33 @@ def proof_of_work(last_proof, diff):
 
     print("Searching for next proof")
     proof = 0
-    #  TODO: Your code here
-    last = f'{last_proof}'.encode()
-    last_hash = hashlib.sha256(last).hexdigest()
     
-    while valid_proof(last_hash, last_proof, proof, diff) is False:
-        proof += 1
+    #add 1 to proof if valid_proof false
+    while valid_proof(last_proof, proof, difficulty) is False:
+        proof +=1
+    
 
     print("Proof found: " + str(proof) + " in " + str(timer() - start))
     return proof
 
 
-def valid_proof(last_hash, last_proof, proof, diff):
+def valid_proof(last_proof, proof, difficulty):
     """
     Validates the Proof:  Multi-ouroborus:  Do the last six characters of
     the hash of the last proof match the first six characters of the hash
     of the new proof?
+
     IE:  last_hash: ...AE9123456, new hash 123456E88...
     """
 
     # TODO: Your code here!
+    # set guess to encoded proof
     guess = f'{last_proof}{proof}'.encode()
+    # set guess_hash to hashed guess
     guess_hash = hashlib.sha256(guess).hexdigest()
-
-    if guess_hash[:diff] == '0'*diff:
+    # return when the last six of guess_hash = first six of last_hash
+    
+    if guess_hash[:difficulty] == '0'*difficulty:
         return True
     else:
         return False
@@ -72,24 +76,26 @@ if __name__ == '__main__':
     # if id == 'NONAME\n':
     #     print("ERROR: You must change your name in `my_id.txt`!")
     #     exit()
-    # Run forever until interrupted
+    # # Run forever until interrupted
     while True:
         # Get the last proof from the server
         r = requests.get(url=node + "/last_proof", headers=headers)
-        last_data = r.json()
-        new_proof = proof_of_work(last_data['proof'], last_data['difficulty'])
-        print(f'New Proof {new_proof}')
+        
+        print(f'R: {r}')
+        data = r.json()
+        time.sleep(data["cooldown"])
+        print(f'Data: {data}')
+        new_proof = proof_of_work(data['proof'], data['difficulty'] )
 
         post_data = {"proof": new_proof}
-        print(post_data)
 
-        r = requests.post(url=node + "/mine", json=post_data, headers=headers)
+        r = requests.post(url=node + "/mine",json=post_data, headers=headers)
         data = r.json()
-        print(data)
+        print(f'Data: {data}')
         time.sleep(data["cooldown"])
-        # print(data['message'])
-        # if data['message'] == 'New Block Forged':
+        # new_proof = proof_of_work(data['proof'])
+        # if data.get('message') == 'New Block Forged':
         #     coins_mined += 1
-        #     print("Total coins mined: " + str(coins_mined))
+        #     print("Total coins_mineds mined: " + str(coins_mined))
         # else:
-        #     print(data['message'])
+        #     print(data.get('message'))
