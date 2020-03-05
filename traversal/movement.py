@@ -69,11 +69,42 @@ def sell(player):
 
 
 def moving_function(traversal_path, rooms_id_list=None):
-    for i in range(len(traversal_path)):
-        
-        data = {"direction": traversal_path[i], "next_room_id": str(rooms_id_list[i])}
-        r = requests.post(url=node + "/adv/move",
-                            json=data, headers=headers)
+    print(rooms_id_list)
+    room_list = []
+    i = 0
+    # node = "https://lambda-treasure-hunt.herokuapp.com/api/adv/move"
+    # for i in range(len(traversal_path)):
+    #     data = {"direction": traversal_path[i],
+    #         "next_room_id": str(rooms_id_list[i])}
+    #     r = requests.post(url=node, json=data, headers=headers)
+    #     # Handle non-json response
+    #     try:
+    #         print(data)
+    #         print("cooldown:", r.json()["cooldown"])
+    #         time.sleep(r.json()["cooldown"])
+    #     except ValueError:
+    #         print("Error:  Non-json response")
+    #         print("next_room_id Response returned:")
+    #         print(r)
+    while i < len(traversal_path):
+        direction = traversal_path[i]
+        while i < len(traversal_path) and traversal_path[i] == direction:
+            room_list.append(str(rooms_id_list[i]))
+            i += 1
+            
+        next_rooms = ",".join(room_list)
+
+        data = {"direction": direction,
+                    "next_room_id": next_rooms}
+        if len(room_list) == 1:
+            node = "https://lambda-treasure-hunt.herokuapp.com/api/adv/move"
+            data = {"direction": direction,
+                    "next_room_id": next_rooms}
+        else:
+            node = "https://lambda-treasure-hunt.herokuapp.com/api/adv/dash"
+            data = {"direction": direction, "num_rooms": str(len(room_list)),
+                    "next_room_ids": next_rooms}
+        r = requests.post(url=node, json=data, headers=headers)
         # Handle non-json response
         try:
             print(data)
@@ -83,6 +114,8 @@ def moving_function(traversal_path, rooms_id_list=None):
             print("Error:  Non-json response")
             print("next_room_id Response returned:")
             print(r)
+        room_list = []
+
 
 r = requests.get(url=node + "/adv/init", headers=headers)
 time.sleep(r.json()["cooldown"])
@@ -124,5 +157,5 @@ def room_search(visited, start, target):
 
 if __name__ == '__main__':
 
-    room_search(visited, starting_room, name_change)
+    room_search(visited, starting_room, 1)
     # sell(player)

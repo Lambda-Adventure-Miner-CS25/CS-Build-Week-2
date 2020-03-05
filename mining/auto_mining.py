@@ -3,7 +3,7 @@ import requests
 import time
 import sys
 import json
-
+import os
 from cpu import *
 from miner import proof_of_work, valid_proof
 
@@ -30,23 +30,49 @@ node = "https://lambda-treasure-hunt.herokuapp.com/api"
 headers = {"Authorization": Min_KEY}
 
 def get_current_location():
+    node = "https://lambda-treasure-hunt.herokuapp.com/api"
+    headers = {"Authorization": Min_KEY}
     r = requests.get(url=node + "/adv/init", headers=headers)
-    time.sleep(r.json()["cooldown"])
-    starting_room = r.json()
-    return starting_room
+    try:
+        print(r.json())
+        print("cooldown:", r.json()["cooldown"])
+        time.sleep(r.json()["cooldown"])
+        return r.json()['room_id']
+    except ValueError:
+        print("Error:  Non-json response")
+        print("next_room_id Response returned:")
+        print(r)
+    
+    
+    
+    
 
 def examine_well():
-    data = {"name": "well"}
-    r = requests.post(url=node + "/adv/examine", json=data, headers=headers)
-    time.sleep(r.json()["cooldown"])
-    return r.json()["description"]
+    node = "https://lambda-treasure-hunt.herokuapp.com/api"
+    headers = {"Authorization": Min_KEY}
+    while True:
+        data = {"name": "Well"}
+        r = requests.post(url=node + "/adv/examine", json=data, headers=headers)
+        try:
+            print(r.json())
+            print("cooldown:", r.json()["cooldown"])
+            time.sleep(r.json()["cooldown"])
+            if len(r.json()["errors"]) == 0:
+                return r.json()["description"]
+        except ValueError:
+            print("Error:  Non-json response")
+            print("next_room_id Response returned:")
+            print(r)
+        
 
 if __name__ == '__main__':
     # while True
     mined_coin = 0
     # get current location
-    current_location_id = get_current_location()['room_id']
-    while True:
+    
+    n=0
+    while n < 1000:
+        current_location_id = get_current_location()
         # go to the well
         print("current location: ",current_location_id)
         print("going to the well..........")
@@ -67,8 +93,6 @@ if __name__ == '__main__':
         cpu.load()
         room = int("".join(cpu.run()[-3:]))
         print("Clue: room", room)
-        # clean up the clue.ls8 file
-        open("mining/clue.ls8", "w").close()
 
         # go to the room
         print(f"going to room {room}..........")
@@ -95,7 +119,7 @@ if __name__ == '__main__':
             if 'messages' in data and 'New Block Forged' in data['messages']:
                 mined_coin += 1
                 print(f"Total Mined Coins in this time: {mined_coin}")
-                current_location_id = room
+                n += 1
                 break
     
 
