@@ -21,6 +21,7 @@ shrine1 = 461
 shrine2 = 374
 # The Transmogriphier
 transmogriphier = 495
+donut = 15
     # Mine location (decoded coordinates as room id)
 # Add power abilites (STRETCH)
 
