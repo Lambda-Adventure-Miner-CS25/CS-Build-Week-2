@@ -15,12 +15,8 @@ store = 1
 # Name Changer at 467
 name_change = 467
 # Well at 55 
-well = 55
-# Shrines at 461, 374
-shrine1 = 461
-shrine2 = 374
-# The Transmogriphier
-transmogriphier = 495
+well = 555
+
     # Mine location (decoded coordinates as room id)
 # Add power abilites (STRETCH)
 
@@ -77,20 +73,7 @@ def moving_function(traversal_path, rooms_id_list=None):
     print(rooms_id_list)
     room_list = []
     i = 0
-    # node = "https://lambda-treasure-hunt.herokuapp.com/api/adv/move"
-    # for i in range(len(traversal_path)):
-    #     data = {"direction": traversal_path[i],
-    #         "next_room_id": str(rooms_id_list[i])}
-    #     r = requests.post(url=node, json=data, headers=headers)
-    #     # Handle non-json response
-    #     try:
-    #         print(data)
-    #         print("cooldown:", r.json()["cooldown"])
-    #         time.sleep(r.json()["cooldown"])
-    #     except ValueError:
-    #         print("Error:  Non-json response")
-    #         print("next_room_id Response returned:")
-    #         print(r)
+
     while i < len(traversal_path):
         direction = traversal_path[i]
         while i < len(traversal_path) and traversal_path[i] == direction:

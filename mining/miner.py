@@ -65,18 +65,15 @@ if __name__ == '__main__':
         # Get the last proof from the server
         r = requests.get(url=node + "/last_proof", headers=headers)
         last_data = r.json()
+
+        # Get new proof
         new_proof = proof_of_work(last_data['proof'], last_data['difficulty'])
         print(f'New Proof {new_proof}')
 
+        # send out new proof
         post_data = {"proof": new_proof}
-
         r = requests.post(url=node + "/mine", json=post_data, headers=headers)
         data = r.json()
         print(data)
         time.sleep(data["cooldown"])
-        # print(data['message'])
-        # if data['message'] == 'New Block Forged':
-        #     coins_mined += 1
-        #     print("Total coins mined: " + str(coins_mined))
-        # else:
-        #     print(data['message'])
+   
